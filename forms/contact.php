@@ -1,41 +1,61 @@
 <?php
-  /**
-  * Requires the "PHP Email Form" library
-  * The "PHP Email Form" library is available only in the pro version of the template
-  * The library should be uploaded to: vendor/php-email-form/php-email-form.php
-  * For more info and help: https://bootstrapmade.com/php-email-form/
-  */
+/**
+ * Requires the "PHP Email Form" library
+ * The "PHP Email Form" library is available only in the pro version of the template
+ * The library should be uploaded to: vendor/php-email-form/php-email-form.php
+ * For more info and help: https://bootstrapmade.com/php-email-form/
+ */
 
-  // Replace contact@example.com with your real receiving email address
-  $receiving_email_address = 'contact@example.com';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
-  if( file_exists($php_email_form = '../assets/vendor/php-email-form/php-email-form.php' )) {
-    include( $php_email_form );
-  } else {
-    die( 'Unable to load the "PHP Email Form" Library!');
-  }
+// Replace contact@example.com with your real receiving email address
+$receiving_email_address = 'contact@example.com';
 
-  $contact = new PHP_Email_Form;
-  $contact->ajax = true;
-  
-  $contact->to = $receiving_email_address;
-  $contact->from_name = $_POST['name'];
-  $contact->from_email = $_POST['email'];
-  $contact->subject = $_POST['subject'];
+$php_mailer_files = [
+    'PHPMailer.php',
+    'Exception.php',
+    'SMTP.php',
+];
 
-  // Uncomment below code if you want to use SMTP to send emails. You need to enter your correct SMTP credentials
-  /*
-  $contact->smtp = array(
-    'host' => 'example.com',
-    'username' => 'example',
-    'password' => 'pass',
-    'port' => '587'
-  );
-  */
+foreach ($php_mailer_files as $file) {
+    if (file_exists($php_mailer_file = '../assets/vendor/phpmailer/src/' . $file)) {
+        include($php_mailer_file);
+    } else {
+        die('Unable to load the "PHP Email Form" Library!');
+    }
+}
 
-  $contact->add_message( $_POST['name'], 'From');
-  $contact->add_message( $_POST['email'], 'Email');
-  $contact->add_message( $_POST['message'], 'Message', 10);
+// receiving the post params
+$name = $_POST['name'];
+$email = $_POST['email'];
+$subject = $_POST['subject'];
+$message = $_POST['message'];
 
-  echo $contact->send();
-?>
+$mail = new PHPMailer;
+
+try {
+    //Server settings
+    $mail->SMTPDebug = SMTP::DEBUG_CLIENT; // only enable for debugging
+    $mail->isSMTP();
+    $mail->Host = 'sandbox.smtp.mailtrap.io';
+    $mail->SMTPAuth = true;
+    $mail->Username = '6c880d7207c379';
+    $mail->Password = '057724e4b3f26b';
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port = 2525;
+
+    //Recipients
+    $mail->addAddress('sujal.lohani7@gmail.com', 'Govinda Lohani');
+
+    //Content
+    $mail->isHTML(true);
+    $mail->Subject = $subject;
+    $mail->Body = 'From: ' . $name . '(' . $email . ')<p>' . $message . ' </p>';
+
+    $mail->send();
+} catch (Exception $e) {
+    echo "exception";
+    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+}

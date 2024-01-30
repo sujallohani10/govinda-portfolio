@@ -57,7 +57,7 @@
     })
     .then(response => {
       if( response.ok ) {
-        return response.text();
+        return response.statusText;
       } else {
         throw new Error(`${response.status} ${response.statusText} ${response.url}`); 
       }
