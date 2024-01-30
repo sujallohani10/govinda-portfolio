@@ -37,7 +37,7 @@ $mail = new PHPMailer;
 
 try {
     //Server settings
-    $mail->SMTPDebug = SMTP::DEBUG_CLIENT; // only enable for debugging
+    //$mail->SMTPDebug = SMTP::DEBUG_SERVER; // only enable for debugging
     $mail->isSMTP();
     $mail->Host = 'sandbox.smtp.mailtrap.io';
     $mail->SMTPAuth = true;
